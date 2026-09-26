@@ -867,11 +867,11 @@ int effect_end2(struct effect *e,int flag){
 	effect_remove(&f->effects,e);
 	update_attr_all(f);
 	report(f,MSG_EFFECT_END,e);
-	if(!(e->base->flag&EFFECT_NODESTRUCT)&&e->base->end)
+	if(!(flag&EFFECT_NODESTRUCT)&&e->base->end)
 		e->base->end(e);
 	//printf("FREE1 %p\n",e);
 	effect_free(e,f);
-	if(!(e->base->flag&EFFECT_NOCALLBACK)){
+	if(!(flag&EFFECT_NOCALLBACK)){
 		for_each_effectf(v,f->effects,effect_endt){
 			v->base->effect_endt(v,e);
 		}
