@@ -10,6 +10,7 @@
 struct species {
 	struct unit_base max;
 	int flag,type,evolve_level,xp_type;
+	const char *spec_class;
 	const char *moves[151];
 };
 extern const struct species builtin_species[];

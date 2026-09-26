@@ -891,6 +891,7 @@ st:
 	}else
 		printw("%s",ts("unevolvable"));
 	addch('\n');
+	printw("%s: %s\n",ts("species_class"),spec_ts(builtin_species[cur].spec_class));
 	if(builtin_species[cur].flag&UF_CANSELECTTYPE)
 		printw("%s\n",ts("can_select_type"));
 	move(LINES-1,0);
@@ -1126,7 +1127,7 @@ st:
 	ew=effect_types(1<<cur);
 	for(int i=TYPE_GRASS;i&TYPES_ALL;i<<=1){
 		if(i&ew){
-			if(i&TYPES_DEVINE)
+			if(i&TYPES_DIVINE)
 				printw(" [%s]",type2str(i));
 			else
 				printw(" %s",type2str(i));
@@ -1137,7 +1138,7 @@ st:
 	ew=weak_types(1<<cur);
 	for(int i=TYPE_GRASS;i&TYPES_ALL;i<<=1){
 		if(i&ew){
-			if(i&TYPES_DEVINE)
+			if(i&TYPES_DIVINE)
 				printw(" [%s]",type2str(i));
 			else
 				printw(" %s",type2str(i));
@@ -1145,7 +1146,7 @@ st:
 	}
 	addch('\n');
 	ew=1<<cur;
-	if(ew&TYPES_DEVINE){
+	if(ew&TYPES_DIVINE){
 		printw("%s\n",ts("not_unit_type"));
 	}else {
 		printw("%s:\n",ts("as_unit_type"));

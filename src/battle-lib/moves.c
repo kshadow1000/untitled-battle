@@ -48,7 +48,7 @@ register_category(laser);
 register_category(roaring);
 register_category(explode);
 register_category(gravity);
-register_category(nature);
+register_category(logarithmic);
 long instant_death(struct unit *dest){
 	return damage(dest,NULL,dest->max_hp*64,DAMAGE_REAL,AF_IDEATH|AF_INHIBIT,TYPE_VOID,NULL);
 }
@@ -396,7 +396,7 @@ void kaleido_attack_end0(struct effect *e,struct unit *dest,struct unit *src,lon
 	if(dmg<=0)
 		return;
 	effect_ev(e)
-		attack(dest,src,dmg,DAMAGE_MAGICAL,0,TYPE_DEVINEGRASS,nature);	
+		attack(dest,src,dmg,DAMAGE_MAGICAL,0,TYPE_DIVINEGRASS,logarithmic);	
 }
 void kaleido_roundend(struct effect *e){
 	long v;
@@ -508,8 +508,9 @@ const struct event real_fire_disillusion_fr[1]={{
 	.action=real_fire_disillusion_fr_action,
 }};
 extern const struct effect_base wet[1];
+#define FINDENV_ARG NULL,0,EX_NOCHECKOWNER,EFFECT_FIND|EFFECT_SELECTALL
 void metal_bomb_inited(struct effect *e){
-	if(effectx(wet,e->dest,NULL,0,8,EFFECT_FIND|EFFECT_SELECTALL))
+	if(effectx(wet,e->dest,FINDENV_ARG))
 		effect_end(e);
 }
 void metal_bomb_end(struct effect *e){
@@ -675,7 +676,7 @@ void scorching_roaring(struct unit *s){
 		roaring_common_b;
 	}
 	t=s->osite;
-	attack(t,s,(0.6+0.2*n)*s->atk,DAMAGE_MAGICAL,AF_CRIT,TYPE_FIRE,roaring);
+	attack(t,s,(0.6+0.2*n)*s->atk,DAMAGE_MAGICAL,AF_CRIT|AF_TYPE,TYPE_FIRE,roaring);
 	heal(s,0.18*n*s->max_hp);
 	effect(ATK,s,s,1+n,-1);
 }
@@ -691,7 +692,7 @@ void thunder_roaring(struct unit *s){
 		roaring_common_b;
 	}
 	t=s->osite;
-	dmg=attack(t,s,(0.6+0.2*n)*s->atk,DAMAGE_MAGICAL,AF_CRIT,TYPE_ELECTRIC,roaring);
+	dmg=attack(t,s,(0.6+0.2*n)*s->atk,DAMAGE_MAGICAL,AF_CRIT|AF_TYPE,TYPE_ELECTRIC,roaring);
 	for_each_unit(u,t->owner){
 		attack(t,s,0.15*dmg+n*0.06*u->max_hp,DAMAGE_REAL,0,TYPE_ELECTRIC,roaring);
 	}
@@ -722,10 +723,10 @@ void freezing_roaring(struct unit *s){
 	t=get_unit_by_arg(s->owner,1);
 	if(!t||t->state==UNIT_FREEZING_ROARINGED)
 		t=s->osite;
-	damage(t,s,t->hp,DAMAGE_MAGICAL,effect_weak_flag(effect_weak_level(unit_type(t),TYPE_ICE))|AF_CRIT|DF_NONHOOKABLE|DF_KEEPALIVE|DF_IGNOREHP|DF_NOCALLBACK,TYPE_ICE,roaring);
+	damage(t,s,t->hp,DAMAGE_MAGICAL,AF_CRIT|DF_NONHOOKABLE|DF_KEEPALIVE|DF_IGNOREHP|DF_NOCALLBACK,TYPE_ICE,roaring);
 	//show as a critical magical damage corresponding with other roarings.
 	unit_setstate(t,UNIT_FREEZING_ROARINGED);
-	effectx(NULL,s,NULL,0,0,EFFECT_REMOVE|EFFECT_NEGATIVE|EFFECT_NONHOOKABLE|EFFECT_NODESTRUCT|EFFECT_UNPURIFIABLE);
+	effectx(NULL,s,NULL,0,EX_REMOVE,EFFECT_FIND|EFFECT_NEGATIVE|EFFECT_NONHOOKABLE|EFFECT_NODESTRUCT|EFFECT_NOCALLBACK|EFFECT_UNPURIFIABLE);
 	p1=&s->owner->field->winner;
 	if(*p1==t->owner){
 		*p1=NULL;
@@ -934,7 +935,7 @@ void gp_damage_end(struct effect *e,struct unit *dest,struct unit *src,long valu
 }
 const struct effect_base black_hole[1];
 void gp_roundend(struct effect *e){
-	if(!effectx(black_hole,e->dest,NULL,0,8,EFFECT_FIND|EFFECT_SELECTALL))
+	if(!effectx(black_hole,e->dest,NULL,0,EX_NOCHECKOWNER,EFFECT_FIND|EFFECT_SELECTALL))
 		effect_end(e);
 }
 const struct effect_base gravitational_potential[1]={{
@@ -1437,12 +1438,14 @@ void time_back(struct unit *s){
 	effect_freeall(&head);
 	report(f,MSG_UPDATE,&f->effects);
 	update_attr_all(f);
+	/*
 	for(int i=0;i<6;++i){
 		if(pds[i])
 			do_shear(f->p->units+i,pds[i]);
 		if(eds[i])
 			do_shear(f->e->units+i,eds[i]);
 	}
+	*/
 	if(s->moves[off].action==time_back)
 		setcooldown(s,s->moves+off,41);
 }
@@ -1614,18 +1617,18 @@ void nether_roaring(struct unit *s){
 		roaring_common_b;
 	}
 	t=s->osite;
-	attack(t,s,(0.6+0.2*n)*s->atk,DAMAGE_MAGICAL,AF_CRIT,TYPE_GHOST,roaring);
+	attack(t,s,(0.6+0.2*n)*s->atk,DAMAGE_MAGICAL,AF_CRIT|AF_TYPE,TYPE_GHOST,roaring);
 	effect(AVOID,s,s,n*2,-1);
 }
-#define attr_clear(_u) ((int)(size_t)effectx(NULL,(_u),NULL,0,0,EFFECT_REMOVE|EFFECT_ATTR))
-#define attr_clear_positive(_u) ((int)(size_t)effectx(NULL,(_u),NULL,0,0,EFFECT_REMOVE|EFFECT_POSITIVE|EFFECT_ATTR))
+#define attr_clear(_u) ((int)(size_t)effectx(NULL,(_u),NULL,0,EX_REMOVE,EFFECT_FIND|EFFECT_ATTR))
+#define attr_clear_positive(_u) ((int)(size_t)effectx(NULL,(_u),NULL,0,EX_REMOVE,EFFECT_FIND|EFFECT_POSITIVE|EFFECT_ATTR))
 void tidal(struct unit *s){
 	struct unit *t=gettarget(s);
 	int r=attr_clear_positive(t);
 	if(r){
-		attack(t,s,s->atk,DAMAGE_PHYSICAL,0,TYPE_DEVINEWATER,gravity);
+		attack(t,s,s->atk,DAMAGE_PHYSICAL,0,TYPE_DIVINEWATER,gravity);
 	}else {
-		attack(t,s,1.15*s->atk,DAMAGE_PHYSICAL,0,TYPE_DEVINEWATER,gravity);
+		attack(t,s,1.25*s->atk,DAMAGE_PHYSICAL,0,TYPE_DIVINEWATER,gravity);
 		heal(s,0.35*s->atk);
 	}
 }
@@ -1690,7 +1693,7 @@ void anger_roaring(struct unit *s){
 		roaring_common_b;
 	}
 	t=s->osite;
-	attack(t,s,(0.6+0.2*n)*s->atk,DAMAGE_MAGICAL,AF_CRIT,TYPE_FIGHTING,roaring);
+	attack(t,s,(0.6+0.2*n)*s->atk,DAMAGE_MAGICAL,AF_CRIT|AF_TYPE,TYPE_FIGHTING,roaring);
 	if((double)t->hp/t->max_hp<=0.15+n*0.03)
 		instant_death(t);
 }
@@ -1713,14 +1716,14 @@ void rest(struct unit *s){
 	;
 }
 void moonlight(struct unit *s){
-	effectx(NULL,s,NULL,0,0,EFFECT_REMOVE|EFFECT_NEGATIVE|EFFECT_ATTR);
+	effectx(NULL,s,NULL,0,EX_REMOVE,EFFECT_FIND|EFFECT_NEGATIVE|EFFECT_ATTR);
 
 }
 void byebye(struct unit *s){
 	unit_setstate(s,UNIT_FAILED);
 }
 void scent(struct unit *s){
-	effectx(NULL,s,NULL,0,0,EFFECT_REMOVE|EFFECT_ABNORMAL);
+	effectx(NULL,s,NULL,0,EX_REMOVE,EFFECT_FIND|EFFECT_ABNORMAL);
 
 }
 void synthesis(struct unit *s){
@@ -2040,7 +2043,7 @@ const struct effect_base elbow3[1]={{
 	.flag=EFFECT_POSITIVE,
 	.prior=32
 }};
-#define res_register(_id,_max)\
+#define res_register3(_id,_max,_flag)\
 int _id##_init(struct effect *e,long level,int round){\
 	long __max=(_max);\
 	level+=e->level;\
@@ -2055,8 +2058,10 @@ int _id##_init(struct effect *e,long level,int round){\
 const struct effect_base _id[1]={{\
 	.id=#_id,\
 	.init=_id##_init,\
-	.flag=EFFECT_POSITIVE|EFFECT_UNPURIFIABLE|EFFECT_KEEP\
+	.flag=_flag,\
 }}
+
+#define res_register(_id,_max) res_register3(_id,_max,EFFECT_POSITIVE|EFFECT_UNPURIFIABLE|EFFECT_KEEP)
 res_register(mana,e->dest->level);
 void elbow(struct unit *s){
 	struct unit *t=gettarget(s);
@@ -2270,9 +2275,11 @@ const struct effect_base defcounter[1]={{
 }};
 
 
-int moon_elf_shield_damage(struct effect *e,struct unit *dest,struct unit *src,long *value,int *damage_type,int *aflag,int *type,void **arg){
+int moonelf_shield_damage(struct effect *e,struct unit *dest,struct unit *src,long *value,int *damage_type,int *aflag,int *type,void **arg){
 	if(dest!=e->dest||!e->level||*value<0)
 		return 0;
+	if(*aflag&AF_IDEATH)
+		return -1;
 	if(*type){
 		if(*type&e->unused){
 			if(*value>1)
@@ -2283,7 +2290,7 @@ int moon_elf_shield_damage(struct effect *e,struct unit *dest,struct unit *src,l
 				return -1;
 			}
 			t=*type;
-			t|=((t&TYPES_DEVINE)>>17)|((t&(TYPE_GRASS|TYPE_FIRE|TYPE_WATER))<<17);
+			t|=((t&TYPES_DIVINE)>>17)|((t&(TYPE_GRASS|TYPE_FIRE|TYPE_WATER))<<17);
 			e->unused=t;
 			if(*value>1)
 				*value=1;
@@ -2302,7 +2309,7 @@ int moon_elf_shield_damage(struct effect *e,struct unit *dest,struct unit *src,l
 	}
 	return -1;
 }
-int moon_elf_shield_init(struct effect *e,long level,int round){
+int moonelf_shield_init(struct effect *e,long level,int round){
 	if(!e->round)
 		e->round=-1;
 	if(level>=0){
@@ -2315,42 +2322,55 @@ int moon_elf_shield_init(struct effect *e,long level,int round){
 			level=0;
 		e->level=level;
 	}
+	if(!e->unused)
+		e->unused=TYPE_STEEL;
 	return 0;
 }
-extern const struct effect_base moon_elf_shield[1];
-void moon_elf_shield_effect_end(struct effect *e,struct effect *ep,struct unit *dest,struct unit *src,long level,int round);
-void moon_elf_shield_cooldown_end(struct effect *e){
-	struct effect *ep=unit_findeffect(e->dest,moon_elf_shield);
+extern const struct effect_base moonelf_shield[1];
+void moonelf_shield_effect_end(struct effect *e,struct effect *ep,struct unit *dest,struct unit *src,long level,int round);
+void moonelf_shield_cooldown_end(struct effect *e){
+	struct effect *ep=unit_findeffect(e->dest,moonelf_shield);
 	if(ep)
-		moon_elf_shield_effect_end(ep,NULL,ep->dest,NULL,0,0);
+		moonelf_shield_effect_end(ep,NULL,ep->dest,NULL,0,0);
 }
-const struct effect_base moon_elf_shield_cooldown[1]={{
-	.id="moon_elf_shield_cooldown",
+const struct effect_base moonelf_shield_cooldown[1]={{
+	.id="moonelf_shield_cooldown",
 	.flag=EFFECT_NEGATIVE|EFFECT_UNPURIFIABLE,
-	.end=moon_elf_shield_cooldown_end
+	.end=moonelf_shield_cooldown_end,
 }};
-void moon_elf_shield_effect_end(struct effect *e,struct effect *ep,struct unit *dest,struct unit *src,long level,int round){
+void moonelf_shield_effect_end(struct effect *e,struct effect *ep,struct unit *dest,struct unit *src,long level,int round){
 	if(dest!=e->dest)
 		return;
-	if(unit_findeffect(dest,moon_elf_shield_cooldown))
+	if(unit_findeffect(dest,moonelf_shield_cooldown))
 		return;
 	effect_ev(e){
 		if(!effectx(NULL,e->dest,NULL,0,0,EFFECT_FIND|EFFECT_CONTROL))
 			return;
-		effectx(NULL,e->dest,NULL,0,0,EFFECT_REMOVE|EFFECT_CONTROL);
+		effectx(NULL,e->dest,NULL,0,EX_REMOVE,EFFECT_FIND|EFFECT_CONTROL);
 		effect_reinit(e,dest,3*dest->base->def,-1);
-		effect(moon_elf_shield_cooldown,dest,dest,0,5);
+		effect(moonelf_shield_cooldown,dest,dest,0,5);
 	}
 }
-const struct effect_base moon_elf_shield[1]={{
-	.id="moon_elf_shield",
+const struct effect_base moonelf_shield[1]={{
+	.id="moonelf_shield",
 	.flag=EFFECT_PASSIVE,
-	.init=moon_elf_shield_init,
-	.damage=moon_elf_shield_damage,
-	.effect_end=moon_elf_shield_effect_end,
+	.init=moonelf_shield_init,
+	.damage=moonelf_shield_damage,
+	.effect_end=moonelf_shield_effect_end,
 }};
-void moon_elf_shield_p(struct unit *s){
-	effect(moon_elf_shield,s,s,0,-1);
+void moonelf_shield_a(struct unit *s){
+	struct unit *t=gettarget(s);
+	struct effect *e;
+	int type=TYPE_STEEL;
+	if(hittest(t,s,1.0)){
+		e=unit_findeffect(s,moonelf_shield);
+		if(e)
+			type=e->unused&TYPES_REGULAR;
+		attack(t,s,s->atk,DAMAGE_PHYSICAL,0,type,laser);
+	}
+}
+void moonelf_shield_p(struct unit *s){
+	effect(moonelf_shield,s,s,0,-1);
 }
 int adbd_event(struct effect *e,const struct event *ev,struct unit *src,void *arg){
 	struct u_l *ul;
@@ -2384,8 +2404,8 @@ void burn_boat(struct unit *s){
 		d0=(double)s->hp/(double)s->max_hp;
 		dmg=(3.0-2.0*d0)*s->atk;
 		attack(t,s,dmg,DAMAGE_PHYSICAL,0,TYPE_FIGHTING,NULL);
-		e=unit_findeffect(s,moon_elf_shield);
-		if(e&&e->level&&e->unused!=TYPE_STEEL)
+		e=unit_findeffect(s,moonelf_shield);
+		if(e&&e->level)
 			attack(t,s,0.4*dmg,DAMAGE_PHYSICAL,0,e->unused,NULL);
 	}
 	if(!isalive(t->state))
@@ -2398,8 +2418,8 @@ void bb_statemod(struct effect *e,struct unit *u,int old){
 		effect_ev(e){
 			effect_setlevel(e,2);
 			revive_nonhookable(u,u->max_hp);
-			effectx(moon_elf_shield_cooldown,u,NULL,0,0,EFFECT_REMOVE|EFFECT_NONHOOKABLE|EFFECT_UNPURIFIABLE);
-			effectx(NULL,u,NULL,0,0,EFFECT_REMOVE|EFFECT_NEGATIVE);
+			effectx(moonelf_shield_cooldown,u,NULL,0,EX_REMOVE,EFFECT_FIND|EFFECT_NONHOOKABLE|EFFECT_UNPURIFIABLE);
+			effectx(NULL,u,NULL,0,EX_REMOVE,EFFECT_FIND|EFFECT_NEGATIVE);
 			for_each_move(m,u){
 				if(m->id&&m->action==metal_bomb){
 					event(real_fire_disillusion_fr,u);
@@ -2410,19 +2430,22 @@ void bb_statemod(struct effect *e,struct unit *u,int old){
 	}
 }
 int burn_boat_damage(struct effect *e,struct unit *dest,struct unit *src,long *value,int *damage_type,int *aflag,int *type,void **arg){
-	long dmg,def;
+	long dmg;
 	if(dest==e->dest){
 		switch(e->level){
 			case 2:
 				return -1;
 			case 1:
-				dmg=0.4*dest->max_hp;
-				def=e->dest->def;
-				if(def)
-					dmg*=def_coef(def);
+				dmg=0.75*def_coef(e->dest->def)*dest->max_hp;
+				if(*(long *)e->data>=dmg){
+					*value=0;
+					break;
+				}
+				dmg-=*(long *)e->data;
 				if(*value>dmg){
 					*value=dmg;
 				}
+				*(long *)e->data+=*value;
 				break;
 			default:
 				break;
@@ -2433,13 +2456,13 @@ int burn_boat_damage(struct effect *e,struct unit *dest,struct unit *src,long *v
 int burn_boat_effect1(struct effect *e,const struct effect_base *base,struct unit *dest,struct unit *src,long *level,int *round,int *xflag){
 	struct effect *ep;
 	if(dest==e->dest&&e->level){
-		if(base==moon_elf_shield_cooldown)
+		if(base==moonelf_shield_cooldown)
 			return -1;
 		if(base->flag&EFFECT_CONTROL){
 			if(*xflag&EFFECT_TEST)
 				return -1;
 			effect_ev(e){
-				ep=unit_findeffect(dest,moon_elf_shield);
+				ep=unit_findeffect(dest,moonelf_shield);
 				if(ep)
 					effect_reinit(ep,dest,3*dest->base->def,-1);
 			}
@@ -2449,6 +2472,7 @@ int burn_boat_effect1(struct effect *e,const struct effect_base *base,struct uni
 	return 0;
 }
 void burn_boat_roundstart(struct effect *e){
+	*(long *)e->data=0;
 	if(e->level==2){
 		effect_ev(e){
 			effect_setlevel(e,1);
@@ -2462,6 +2486,7 @@ const struct effect_base burn_boat_effect[1]={{
 	.effect=burn_boat_effect1,
 	.statemod=bb_statemod,
 	.roundstart=burn_boat_roundstart,
+	.data_size=sizeof(long),
 }};
 void burn_boat_p(struct unit *s){
 	effect(burn_boat_effect,s,s,0,-1);
@@ -2482,7 +2507,7 @@ void electric_arc(struct unit *s){
 }
 void metal_syncretize(struct unit *s){
 	struct unit *t=gettarget(s);
-	attack(t,s,s->atk,DAMAGE_PHYSICAL,0,TYPE_ALKALIFIRE,NULL);
+	attack(t,s,s->atk,DAMAGE_PHYSICAL,0,TYPE_ALKALIFIRE,explode);
 	effect(PDB,s,s,1,-1);
 }
 int uniform_base_damage(struct effect *e,struct unit *dest,struct unit *src,long *value,int *damage_type,int *aflag,int *type,void **arg){
@@ -2635,7 +2660,7 @@ void natural_decay_pm(struct unit *s){
 		return;
 	if(e->level<2){
 		t=gettarget(s);
-		attack(t,s,0.4122*s->atk+0.01832*t->max_hp,DAMAGE_PHYSICAL,0,TYPE_DEVINEGRASS,nature);
+		attack(t,s,0.4122*s->atk+0.01832*t->max_hp,DAMAGE_PHYSICAL,0,TYPE_DIVINEGRASS,logarithmic);
 		effect_addlevel(e,1);
 	}else {
 		t=s->osite;
@@ -2646,7 +2671,7 @@ void natural_decay_pm(struct unit *s){
 const struct move natural_decay_p={
 	.id="natural_decay",
 	.action=natural_decay_pm,
-	.type=TYPE_DEVINEGRASS,
+	.type=TYPE_DIVINEGRASS,
 	.prior=0,
 	.flag=MOVE_NOCONTROL,
 	.mlevel=MLEVEL_CONCEPTUAL
@@ -2683,7 +2708,7 @@ const struct effect_base natural_decay_effect[1]={{
 void natural_decay(struct unit *s){
 	struct unit *t=gettarget(s);
 	if(hittest(t,s,1.0))
-		attack(t,s,0.4122*s->atk+0.01832*t->max_hp,DAMAGE_PHYSICAL,0,TYPE_DEVINEGRASS,nature);
+		attack(t,s,0.4122*s->atk+0.01832*t->max_hp,DAMAGE_PHYSICAL,0,TYPE_DIVINEGRASS,logarithmic);
 	effect(natural_decay_effect,s,s,0,-1);
 }
 void dmts_impact(struct unit *s){
@@ -3108,7 +3133,7 @@ void squeeze(struct unit *s){
 	setcooldown(s,s->move_cur,6);
 }
 int accumulated_attack(struct effect *e,struct unit *dest,struct unit *src,long *value,int *damage_type,int *aflag,int *type,void **arg){
-	if(src==e->dest&&damage_pm(*damage_type)&&!(*type&TYPES_DEVINE)&&!(*aflag&AF_CRIT)){
+	if(src==e->dest&&damage_pm(*damage_type)&&!(*type&TYPES_DIVINE)&&!(*aflag&AF_CRIT)){
 		*aflag|=AF_CRIT;
 		if(!(*aflag&DF_TEST))
 			effect_end(e);
@@ -3118,14 +3143,14 @@ int accumulated_attack(struct effect *e,struct unit *dest,struct unit *src,long 
 const struct effect_base accumulated[1]={{
 	.id="accumulated",
 	.attack=accumulated_attack,
-	.flag=EFFECT_POSITIVE|EFFECT_KEEP,
+	.flag=EFFECT_POSITIVE|EFFECT_KEEP|EFFECT_FRONT,
 }};
 void accumulate(struct unit *s){
-	effect(accumulated,s,s,0,2);
+	effect(accumulated,s,s,0,3);
 	setcooldown(s,s->move_cur,2);
 }
 int voltage_transforming_attack(struct effect *e,struct unit *dest,struct unit *src,long *value,int *damage_type,int *aflag,int *type,void **arg){
-	if(src==e->dest&&*damage_type==DAMAGE_PHYSICAL&&!(*type&TYPES_DEVINE)&&!(*aflag&AF_CRIT)&&e->level==1&&labs(src->spi)>=8){
+	if(src==e->dest&&*damage_type==DAMAGE_PHYSICAL&&!(*type&TYPES_DIVINE)&&!(*aflag&AF_CRIT)&&e->level==1&&labs(src->spi)>=8){
 		effect_ev(e){
 			if(!(*aflag&DF_TEST))
 				setspi(src,abs_add(src->spi,-8));
@@ -3135,7 +3160,7 @@ int voltage_transforming_attack(struct effect *e,struct unit *dest,struct unit *
 	return 0;
 }
 void voltage_transforming_attack_end0(struct effect *e,struct unit *dest,struct unit *src,long value,int damage_type,int aflag,int type,void *arg){
-	if(src==e->dest&&damage_type==DAMAGE_PHYSICAL&&!(type&TYPES_DEVINE)&&e->level==2){
+	if(src==e->dest&&damage_type==DAMAGE_PHYSICAL&&!(type&TYPES_DIVINE)&&e->level==2){
 		effect_ev(e){
 			addspi(src,6);
 			heal(src,0.08*src->max_hp+1.6*labs(src->spi));
@@ -3315,7 +3340,7 @@ void time_space_roaring(struct unit *s){
 		roaring_common_b;
 	}
 	t=s->osite;
-	attack(t,s,(0.6+0.2*n)*s->atk,DAMAGE_MAGICAL,AF_CRIT,TYPE_DRAGON,roaring);
+	attack(t,s,(0.6+0.2*n)*s->atk,DAMAGE_MAGICAL,AF_CRIT|AF_TYPE,TYPE_DRAGON,roaring);
 	for_each_effect(e,s->owner->field->effects){
 		if(e->dest!=s)
 			continue;
@@ -3441,7 +3466,7 @@ ava_rec(youkai,1600);
 void high_powered_hit(struct unit *s){
 	struct unit *t=gettarget(s);
 	if(hittest(t,s,1.5)&&rec_check_dec(youkai,s,1600)){
-		attack(t,s,1.6*s->atk,DAMAGE_PHYSICAL,0,TYPE_LIGHT,laser);
+		attack(t,s,3*s->atk,DAMAGE_PHYSICAL,0,TYPE_LIGHT,laser);
 		attr_clear_positive(t);
 		setcooldown(s,s->move_cur,6);
 	}
@@ -3509,7 +3534,7 @@ int edb_event(struct effect *e,const struct event *ev,struct unit *src,void *arg
 	ud=arg;
 	if(ud->damage_type!=DAMAGE_PHYSICAL)
 		return 0;
-	if(!effectx((const void *)bases,ud->u,NULL,0,4,EFFECT_FIND))
+	if(!effectx((const void *)bases,ud->u,NULL,0,EX_BASEARRAY,EFFECT_FIND))
 		return 0;
 	ud->d-=0.4;
 	return 0;
@@ -3540,16 +3565,6 @@ void negative_heal(struct unit *s){
 	struct unit *t=gettarget(s);
 	heal(t,-0.45*s->atk);
 }
-/*void life_limit_end(struct effect *e){
-	unit_setstate(e->dest,UNIT_FAILED);
-}
-const struct effect_base life_limit[1]={{
-	.id="life_limit",
-	.init=abnormal_init,
-	.kill=absolutely_immortal_kill,
-	.end=life_limit_end,
-	.flag=EFFECT_UNPURIFIABLE,
-}};*/
 const struct effect_base future_record[1];
 void life_and_death_register(struct unit *s){
 	struct unit *t=gettarget(s);
@@ -3636,11 +3651,6 @@ const struct effect_base suppressed[1]={{
 	.update_state=suppressed_update_state,
 	.flag=EFFECT_NONHOOKABLE|EFFECT_UNPURIFIABLE|EFFECT_CONTROL|EFFECT_NEGATIVE,
 }};
-/*const struct effect_base vanished[1]={{
-	.id="vanished",
-	.revive=perish_revive,
-	.flag=EFFECT_ALLOWFAILED|EFFECT_NONHOOKABLE|EFFECT_KEEP|EFFECT_UNPURIFIABLE|EFFECT_NEGATIVE,
-}};*/
 void plasmatizing_lightcannon(struct unit *s){
 	struct unit *t=s->osite;
 	int cd;
@@ -3677,7 +3687,6 @@ int countunit_failed(struct player *p){
 		switch(u->state){
 			case UNIT_FADING:
 			case UNIT_FAILED:
-				//if(!unit_findeffect(u,vanished))
 				++r;
 			default:
 				break;
@@ -3762,7 +3771,7 @@ void ap_roundend(struct effect *e){
 }
 int ap_attack(struct effect *e,struct unit *dest,struct unit *src,long *value,int *damage_type,int *aflag,int *type,void **arg){
 	if(dest==e->dest)
-		*value*=pow(1.0125,e->level);
+		*value*=pow(1.025,e->level);
 	return 0;
 }
 const struct effect_base assimilation_progress[1]={{
@@ -4305,12 +4314,12 @@ void air_breaking_thorn_a(struct unit *s){
 	if(unit_effect_round(s,air_breaking_thorn)){
 		oxidate(t=s->osite,s);
 		heal(s,s->max_hp/2);
-		effectx(NULL,NULL,t,0,0,EFFECT_REMOVE|EFFECT_SELECTALL|EFFECT_ENV);
+		effectx(NULL,NULL,t,0,EX_REMOVE,EFFECT_FIND|EFFECT_SELECTALL|EFFECT_ENV);
 	}else {
 		t=gettarget(s);
 		if(hittest(t,s,1.5)){
 			dmg=attack(t,s,1.4*s->atk,DAMAGE_PHYSICAL,AF_DEF,TYPE_WIND,NULL);
-			effectx(PDD,t,NULL,0,0,EFFECT_REMOVE|EFFECT_POSITIVE);
+			effectx(PDD,t,NULL,0,EX_REMOVE,EFFECT_FIND|EFFECT_POSITIVE);
 			if(dmg>128)
 				heal(s,dmg-128);
 		}
@@ -4351,20 +4360,8 @@ void tswitch_update_attr(struct effect *e,struct unit *u){
 	else if(!e->unused)
 		u->type1=0;
 }
-/*
-const struct event type_switch_st[1]={{
-	.id="type_switch_st",
-}};
-void tswitch_move_end(struct effect *e,struct unit *u,struct move *m){
-	if(e->dest==u&&m->flag&MOVE_NORMALATTACK){
-		effect_ev(e)
-			event_do(type_switch_st,u)
-				attack(gettarget(u),u,0.4*u->atk,DAMAGE_MAGICAL,AF_NORMAL,u->type1?u->type1:u->type0,NULL);
-	}
-}*/
 const struct effect_base type_switch[1]={{
 	.update_attr=tswitch_update_attr,
-//	.move_end=tswitch_move_end,
 	.flag=EFFECT_PASSIVE,
 	.prior=64,
 }};
@@ -4470,7 +4467,7 @@ const struct effect_base future_record[1]={{
 	.kill=absolutely_immortal_kill,
 	.statemod=future_record_statemod,
 	.end=future_record_end,
-	.flag=EFFECT_NONHOOKABLE|EFFECT_UNPURIFIABLE,
+	.flag=EFFECT_NONHOOKABLE|EFFECT_UNPURIFIABLE|EFFECT_KEEP,
 }};
 void future_record_a(struct unit *s){
 	struct unit *t=gettarget(s);
@@ -4493,6 +4490,64 @@ void sentence(struct unit *s){
 			heal(s,0.04*x*s->max_hp);
 	}
 	setcooldown(s,s->move_cur,2);
+}
+res_register3(magnum,LONG_MAX,EFFECT_POSITIVE|EFFECT_UNPURIFIABLE|EFFECT_KEEP|EFFECT_FRONT);
+void ldg_inited(struct effect *e,const struct effect_base *other){
+	struct effect *oth;
+	if(e->level<2)
+		return;
+	oth=unit_findeffect(e->dest,other);
+	if(!oth||oth->level<2)
+		return;
+	effect_end(e);
+	effect_end(oth);
+	heal(e->dest,1.4*e->dest->atk);
+	attack(gettarget(e->dest),e->dest,1.4*e->dest->atk,DAMAGE_PHYSICAL,0,TYPE_NORMAL,NULL);
+	effect(magnum,e->dest,e->dest,1,-1);
+}
+const struct effect_base life_gate[1];
+const struct effect_base death_gate[1];
+void lg_inited(struct effect *e){
+	ldg_inited(e,death_gate);
+}
+void dg_inited(struct effect *e){
+	ldg_inited(e,life_gate);
+}
+const struct effect_base life_gate[1]={{
+	.id="life_gate",
+	.init=abnormal_init,
+	.inited=lg_inited,
+	.flag=EFFECT_POSITIVE,
+}};
+const struct effect_base death_gate[1]={{
+	.id="death_gate",
+	.init=abnormal_init,
+	.inited=dg_inited,
+	.flag=EFFECT_POSITIVE,
+}};
+void afterlife_path(struct unit *s){
+	struct unit *t=gettarget(s);
+	if(hittest(t,s,1.0)){
+		attack(t,s,0.8*s->atk,DAMAGE_PHYSICAL,0,TYPE_NORMAL,NULL);
+	}
+	if(*s->owner->field->round&1){
+		heal(s,0.4*s->atk);
+		effect(life_gate,s,s,1,5);
+	}else {
+		attack(t,s,0.4*s->atk,DAMAGE_PHYSICAL,0,TYPE_NORMAL,NULL);
+		effect(death_gate,s,s,1,5);
+	}
+}
+void powered_snipe(struct unit *s){
+	struct unit *t;
+	if(!rec_check_dec(magnum,s,1)){
+		t=gettarget(s);
+		attack(t,s,2.5*s->atk+0.18*t->max_hp,DAMAGE_PHYSICAL,AF_CRIT,TYPE_NORMAL,NULL);
+	}else {
+		t=s->osite;
+		attack(t,s,3.75*s->atk+0.27*t->max_hp,DAMAGE_REAL,AF_CRIT,TYPE_NORMAL,NULL);
+	}
+	setcooldown(s,s->move_cur,8);
 }
 //list
 const struct move builtin_moves[]={
@@ -4636,7 +4691,7 @@ const struct move builtin_moves[]={
 		.id="natural_shield",
 		.action=natural_shield,
 		.init=kaleido_init,
-		.type=TYPE_DEVINEGRASS,
+		.type=TYPE_DIVINEGRASS,
 		.prior=0,
 		.flag=0,
 		.mlevel=MLEVEL_CONCEPTUAL
@@ -4940,7 +4995,7 @@ const struct move builtin_moves[]={
 	{
 		.id="tidal",
 		.action=tidal,
-		.type=TYPE_DEVINEWATER,
+		.type=TYPE_DIVINEWATER,
 		.flag=0,
 		.mlevel=MLEVEL_REGULAR
 	},
@@ -5128,8 +5183,9 @@ const struct move builtin_moves[]={
 		.mlevel=MLEVEL_REGULAR
 	},
 	{
-		.id="moon_elf_shield",
-		.init=moon_elf_shield_p,
+		.id="moonelf_shield",
+		.action=moonelf_shield_a,
+		.init=moonelf_shield_p,
 		.type=TYPE_STEEL,
 		.mlevel=MLEVEL_REGULAR
 	},
@@ -5252,7 +5308,7 @@ const struct move builtin_moves[]={
 	{
 		.id="natural_decay",
 		.action=natural_decay,
-		.type=TYPE_DEVINEGRASS,
+		.type=TYPE_DIVINEGRASS,
 		.prior=0,
 		.flag=0,
 		.mlevel=MLEVEL_CONCEPTUAL
@@ -5497,7 +5553,6 @@ const struct move builtin_moves[]={
 	{
 		.id="three_phase_connector",
 		.action=three_phase_connector,
-		//.init=three_phase_connector_init,
 		.type=TYPE_MACHINE,
 		.flag=0,
 		.cooldown=15,
@@ -5801,6 +5856,20 @@ const struct move builtin_moves[]={
 		.flag=0,
 		.mlevel=MLEVEL_REGULAR
 	},
+	{
+		.id="afterlife_path",
+		.action=afterlife_path,
+		.type=TYPE_NORMAL,
+		.flag=0,
+		.mlevel=MLEVEL_REGULAR
+	},
+	{
+		.id="powered_snipe",
+		.action=powered_snipe,
+		.type=TYPE_NORMAL,
+		.flag=0,
+		.mlevel=MLEVEL_REGULAR
+	},
 	{.id=NULL}
 };
 const size_t builtin_moves_size=sizeof(builtin_moves)/sizeof(builtin_moves[0])-1;
@@ -5866,8 +5935,8 @@ shield,
 heal_weak,
 heal_bonus,
 mana,
-moon_elf_shield,
-moon_elf_shield_cooldown,
+moonelf_shield,
+moonelf_shield_cooldown,
 anti_def_by_def,
 burn_boat_effect,
 uniform_base_effect,
@@ -5910,5 +5979,8 @@ reduced,
 acid_rain,
 spi_pressure,
 future_record,
+magnum,
+life_gate,
+death_gate,
 NULL};
 const size_t effects_size=sizeof(effects)/sizeof(effects[0])-1;

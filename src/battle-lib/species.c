@@ -18,6 +18,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="tiger",
 		.evolve_level=35,
 		.xp_type=160,
 		.moves={
@@ -43,6 +44,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="tiger",
 		.evolve_level=83,
 		.xp_type=160,
 		.moves={
@@ -70,6 +72,7 @@ const struct species builtin_species[]={
 			.level=150,
 		},
 		.type=UTYPE_WILD,
+		.spec_class="tiger",
 		.xp_type=170,
 		.moves={
 			[0]="cold_wind",
@@ -102,6 +105,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="duck",
 		.evolve_level=24,
 		.xp_type=155,
 		.moves={
@@ -126,6 +130,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="duck",
 		.evolve_level=72,
 		.xp_type=155,
 		.moves={
@@ -154,6 +159,7 @@ const struct species builtin_species[]={
 			.level=150,
 		},
 		.type=UTYPE_WILD,
+		.spec_class="duck",
 		.xp_type=160,
 		.moves={
 			[0]="ground_force",
@@ -189,6 +195,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="animal_like_plant",
 		.evolve_level=15,
 		.xp_type=80,
 		.moves={
@@ -213,6 +220,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="animal_like_plant",
 		.evolve_level=45,
 		.xp_type=90,
 		.moves={
@@ -242,6 +250,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="animal_like_plant",
 		.evolve_level=140,
 		.xp_type=100,
 		.moves={
@@ -259,7 +268,6 @@ const struct species builtin_species[]={
 			[126]="peanut_powder",
 			[131]="bonus_release",
 			[139]="freezing_roaring",
-			[148]="natural_shield",
 		},
 	},
 	{
@@ -280,7 +288,8 @@ const struct species builtin_species[]={
 			.level=150,
 		},
 		.flag=UF_CANSELECTTYPE,
-		.type=UTYPE_WILD,
+		.type=UTYPE_UNKNOWN,
+		.spec_class="unknown",
 		.xp_type=2981,
 		.moves={
 			[0]="hypnosis",
@@ -324,6 +333,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="matrix",
 		.evolve_level=42,
 		.xp_type=167,
 		.moves={
@@ -349,6 +359,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="matrix",
 		.evolve_level=74,
 		.xp_type=172,
 		.moves={
@@ -377,6 +388,7 @@ const struct species builtin_species[]={
 			.level=150,
 		},
 		.type=UTYPE_WILD,
+		.spec_class="matrix",
 		.xp_type=180,
 		.moves={
 			[0]="iron_wall",
@@ -408,6 +420,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="matrix",
 		.evolve_level=42,
 		.xp_type=167,
 		.moves={
@@ -434,6 +447,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="matrix",
 		.evolve_level=74,
 		.xp_type=172,
 		.moves={
@@ -462,6 +476,7 @@ const struct species builtin_species[]={
 			.level=150,
 		},
 		.type=UTYPE_WILD,
+		.spec_class="matrix",
 		.xp_type=180,
 		.moves={
 			[0]="blow_down",
@@ -494,6 +509,7 @@ const struct species builtin_species[]={
 			.level=150,
 		},
 		.type=UTYPE_WILD,
+		.spec_class="matrix",
 		.xp_type=180,
 		.moves={
 			[0]="byebye",
@@ -524,6 +540,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="matrix",
 		.evolve_level=42,
 		.xp_type=167,
 		.moves={
@@ -553,6 +570,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="matrix",
 		.evolve_level=74,
 		.xp_type=172,
 		.moves={
@@ -588,6 +606,7 @@ const struct species builtin_species[]={
 			.level=150,
 		},
 		.type=UTYPE_WILD,
+		.spec_class="matrix",
 		.xp_type=180,
 		.moves={
 			[0]="iron_wall",
@@ -629,6 +648,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="matrix",
 		.evolve_level=75,
 		.xp_type=150,
 		.moves={
@@ -660,6 +680,7 @@ const struct species builtin_species[]={
 			.level=150,
 		},
 		.type=UTYPE_WILD,
+		.spec_class="animal_like_plant",
 		.xp_type=160,
 		.moves={
 			[0]="thorns",
@@ -698,6 +719,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="matrix",
 		.evolve_level=50,
 		.xp_type=160,
 		.moves={
@@ -729,6 +751,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="matrix",
 		.evolve_level=100,
 		.xp_type=170,
 		.moves={
@@ -763,6 +786,7 @@ const struct species builtin_species[]={
 			.level=150,
 		},
 		.type=UTYPE_WILD,
+		.spec_class="matrix",
 		.xp_type=180,
 		.moves={
 			[0]="three_phase_drive",
@@ -803,6 +827,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="fairy",
 		.evolve_level=27,
 		.xp_type=155,
 		.moves={
@@ -828,6 +853,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="fairy",
 		.evolve_level=95,
 		.xp_type=163,
 		.moves={
@@ -856,6 +882,7 @@ const struct species builtin_species[]={
 			.level=150,
 		},
 		.type=UTYPE_WILD,
+		.spec_class="fairy",
 		.xp_type=174,
 		.moves={
 			[0]="deposit",
@@ -888,6 +915,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="basic_type",
 		.evolve_level=20,
 		.xp_type=120,
 		.moves={
@@ -913,6 +941,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="basic_type",
 		.evolve_level=60,
 		.xp_type=140,
 		.moves={
@@ -941,6 +970,7 @@ const struct species builtin_species[]={
 		},
 		.flag=UF_EVOLVABLE,
 		.type=UTYPE_WILD,
+		.spec_class="basic_type",
 		.evolve_level=120,
 		.xp_type=160,
 		.moves={
@@ -973,6 +1003,7 @@ const struct species builtin_species[]={
 			.level=150,
 		},
 		.type=UTYPE_WILD,
+		.spec_class="basic_type",
 		.xp_type=180,
 		.moves={
 			[0]="deposit",
@@ -989,6 +1020,120 @@ const struct species builtin_species[]={
 			[117]="heat_wave",
 			[122]="white_phosphorus_bomb",
 			[134]="celestial_phenomena",
+		},
+	},
+	{
+		.max={
+			.id="human",
+			.max_hp=3200,
+			.atk=200,
+			.def=200,
+			.speed=200,
+			.hit=100,
+			.avoid=101,
+			.max_spi=128,
+			.crit_effect=2.0,
+			.type0=TYPE_NORMAL,
+			.level=150,
+		},
+		.type=UTYPE_UNKNOWN,
+		.spec_class="human",
+		.xp_type=100,
+		.moves={
+			[0]="rest",
+			[7]="soften",
+			[16]="escape",
+		},
+	},
+	{
+		.max={
+			.id="jun_hong",
+			.max_hp=3822,
+			.atk=340,
+			.def=350,
+			.speed=311,
+			.hit=100,
+			.avoid=101,
+			.max_spi=128,
+			.crit_effect=2.0,
+			.type0=TYPE_NORMAL,
+			.level=150,
+		},
+		.type=UTYPE_PLOT,
+		.spec_class="human",
+		.xp_type=100,
+		.moves={
+			[0]="rest",
+			[7]="soften",
+			[16]="escape",
+			[30]="pursue",
+			[41]="rebound",
+		},
+	},
+	{
+		.max={
+			.id="sidorenko",
+			.max_hp=4155,
+			.atk=370,
+			.def=420,
+			.speed=387,
+			.hit=100,
+			.avoid=101,
+			.max_spi=128,
+			.crit_effect=2.0,
+			.type0=TYPE_NORMAL,
+			.level=150,
+		},
+		.type=UTYPE_PLOT,
+		.spec_class="human",
+		.xp_type=1440,
+		.moves={
+			[0]="rest",
+			[7]="soften",
+			[16]="escape",
+			[22]="moonelf_shield",
+			[24]="anti_def_by_def",
+			[27]="head_blow",
+			[37]="burn_boat",
+			[44]="entropy_destroyer_blade",
+			[54]="moonelf_shield",
+			[68]="double_slash",
+			[92]="metal_bomb",
+			[113]="defend",
+			[122]="reflex",
+		},
+	},
+	{
+		.max={
+			.id="mole",
+			.max_hp=3874,
+			.atk=303,
+			.def=269,
+			.speed=367,
+			.hit=100,
+			.avoid=101,
+			.max_spi=128,
+			.crit_effect=2.0,
+			.type0=TYPE_SOIL,
+			.level=150,
+		},
+		.type=UTYPE_WILD,
+		.spec_class="animal",
+		.xp_type=111,
+		.moves={
+			[0]="escape",
+			[4]="ground_force",
+			[9]="angry",
+			[12]="entangle",
+			[15]="repeat",
+			[22]="mana_gather",
+			[29]="fury_swipes",
+			[37]="soil_loosening",
+			[45]="dye_bomb",
+			[56]="light_curtain",
+			[71]="ink_jet",
+			[99]="swagger",
+			[103]="sentence",
 		},
 	},
 	{.max={NULL}}

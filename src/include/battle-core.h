@@ -86,19 +86,19 @@
 #define TYPE_SOIL (1<<14)
 #define TYPE_DRAGON (1<<15)
 #define TYPE_NORMAL (1<<16)
-#define TYPE_DEVINEGRASS (1<<17)
+#define TYPE_DIVINEGRASS (1<<17)
 #define TYPE_ALKALIFIRE (1<<18)
-#define TYPE_DEVINEWATER (1<<19)
+#define TYPE_DIVINEWATER (1<<19)
 
-#define TYPES_DEVINE (TYPE_DEVINEGRASS|TYPE_ALKALIFIRE|TYPE_DEVINEWATER)
+#define TYPES_DIVINE (TYPE_DIVINEGRASS|TYPE_ALKALIFIRE|TYPE_DIVINEWATER)
 #define TYPES_ALL (0x0fffff)
 #define TYPES_REGULAR (0x01ffff)
 
 #define TYPES_GRASS_EFFECT (TYPE_WATER|TYPE_LIGHT|TYPE_ROCK|TYPE_SOIL)
 #define TYPES_GRASS_WEAK (TYPE_FIRE|TYPE_STEEL|TYPE_MACHINE|TYPE_DRAGON)
 
-#define TYPES_FIRE_EFFECT (TYPE_GRASS|TYPE_ICE|TYPE_BUG|TYPE_MACHINE)
-#define TYPES_FIRE_WEAK (TYPE_WATER|TYPE_STEEL|TYPE_ROCK|TYPE_SOIL|TYPE_DRAGON)
+#define TYPES_FIRE_EFFECT (TYPE_GRASS|TYPE_STEEL|TYPE_ICE|TYPE_BUG|TYPE_MACHINE)
+#define TYPES_FIRE_WEAK (TYPE_WATER|TYPE_ROCK|TYPE_SOIL|TYPE_DRAGON)
 
 #define TYPES_WATER_EFFECT (TYPE_FIRE|TYPE_ROCK|TYPE_BUG|TYPE_SOIL)
 #define TYPES_WATER_WEAK (TYPE_GRASS|TYPE_WATER|TYPE_LIGHT|TYPE_ELECTRIC|TYPE_DRAGON)
@@ -139,7 +139,7 @@
 #define TYPES_SOIL_EFFECT (TYPE_FIRE|TYPE_POISON|TYPE_ROCK|TYPE_ELECTRIC)
 #define TYPES_SOIL_WEAK (TYPE_GRASS|TYPE_STEEL|TYPE_MACHINE|TYPE_SOIL)
 
-#define TYPES_DRAGON_EFFECT (TYPE_DRAGON|TYPES_DEVINE)
+#define TYPES_DRAGON_EFFECT (TYPE_DRAGON|TYPES_DIVINE)
 #define TYPES_DRAGON_WEAK (TYPE_MACHINE)
 
 #define TYPES_NORMAL_EFFECT (TYPE_VOID)
@@ -187,12 +187,19 @@
 #define EFFECT_NODESTRUCT (1<<14)
 #define EFFECT_OVERRIDESRC (1<<15)
 #define EFFECT_FIND (1<<16)
-#define EFFECT_REMOVE (1<<17)
+#define EFFECT_NOCALLBACK (1<<17)
 #define EFFECT_SELECTALL (1<<18)
 #define EFFECT_TEST (1<<19)
+#define EFFECT_FRONT (1<<20)
 
 #define EFFECT_PASSIVE (EFFECT_POSITIVE|EFFECT_UNPURIFIABLE|EFFECT_KEEP|EFFECT_NONHOOKABLE|EFFECT_ALLOWFAILED)
-#define EFFECT_OPTS (EFFECT_FIND|EFFECT_REMOVE)
+
+#define EX_CHECKDEST 1
+#define EX_CHECKSRC 2
+#define EX_BASEARRAY 4
+#define EX_NOCHECKOWNER 8
+#define EX_CALLBACKLEVEL 16
+#define EX_REMOVE 32
 
 #define STAGE_INIT 0
 #define STAGE_ROUNDSTART 1
@@ -415,9 +422,9 @@
 			case TYPE_NORMAL:\
 				_r=TYPES_NORMAL_EFFECT;\
 				break;\
-			case TYPE_DEVINEGRASS:\
+			case TYPE_DIVINEGRASS:\
 			case TYPE_ALKALIFIRE:\
-			case TYPE_DEVINEWATER:\
+			case TYPE_DIVINEWATER:\
 				_r=TYPES_ALL;\
 				break;\
 			default:\
@@ -482,9 +489,9 @@
 			case TYPE_NORMAL:\
 				_r=TYPES_NORMAL_WEAK;\
 				break;\
-			case TYPE_DEVINEGRASS:\
+			case TYPE_DIVINEGRASS:\
 			case TYPE_ALKALIFIRE:\
-			case TYPE_DEVINEWATER:\
+			case TYPE_DIVINEWATER:\
 				_r=TYPE_VOID;\
 				break;\
 			default:\
@@ -516,6 +523,8 @@
 		_rm?(_e->inevent<_rm):(_e->inevent<EFFECT_RECURSION_DEFAULT);\
 }\
 )
+
+#define effect_data(e,_type) (*(_type *)(e)->data)
 
 #define effect_size(_base) (sizeof(struct effect)+(_base)->data_size)
 
@@ -856,6 +865,8 @@ int effect_addlevel(struct effect *e,long level);
 
 int effect_setround(struct effect *e,int round);
 
+int effect_end2(struct effect *e,int flag);
+
 int effect_end(struct effect *e);
 
 int effect_final(struct effect *e);
@@ -868,7 +879,7 @@ struct effect *effect_copyall(struct effect *head);
 
 int purify(struct effect *e);
 
-int unit_wipeeffect(struct unit *u,int mask);
+int unit_wipeeffect(struct unit *u,int mask,int cond);
 
 int revive(struct unit *u,unsigned long hp);
 

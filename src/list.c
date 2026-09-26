@@ -71,7 +71,7 @@ void p_unit(void){
 		printf(" %s:%s ",ts("unit_type"),ts(cp));
 	p=&builtin_species[i].max;
 	printf("%s:{",ts("attribute_on_max_level"));
-	printf("%s:%d %s:%lu %s:%lu %s:%ld %s:%lu %s:%lu %s:%lu %s:%.2lf%% %s:%.2lf%% %s:%.2lf%% %s:%.2lf%% %s:%.2lf%% ",
+	printf("%s:%d %s:%lu %s:%lu %s:%ld %s:%lu %s:%lu %s:%lu %s:%.2lf%% %s:%.2lf%% %s:%.2lf%% %s:%.2lf%% %s:%.2lf%% %s:%ld} ",
 			ts("level"),p->level,
 			ts("max_hp"),p->max_hp,
 			ts("atk"),p->atk,
@@ -83,9 +83,9 @@ void p_unit(void){
 			ts("physical_bonus"),100*p->physical_bonus,
 			ts("magical_bonus"),100*p->magical_bonus,
 			ts("physical_derate"),100*p->physical_derate,
-			ts("magical_derate"),100*p->magical_derate
+			ts("magical_derate"),100*p->magical_derate,
+			ts("max_spi"),p->max_spi
 			);
-	printf("%s:%ld} ",ts("max_spi"),p->max_spi);
 	//printf("%s:%d %s:%lu ",ts("base_xp"),builtin_species[i].xp_type,ts("xp_from_1_to_max_level"),xp_require_fromto(builtin_species+i,1,150));
 	if(builtin_species[i].flag&UF_EVOLVABLE){
 		printf("%s:%d(%s) ",ts("evolve_level"),builtin_species[i].evolve_level,unit_ts(builtin_species[i+1].max.id));
@@ -97,10 +97,11 @@ void p_unit(void){
 		printf("%s ",ts("unevolvable"));
 	if(builtin_species[i].flag&UF_CANSELECTTYPE)
 		printf("%s ",ts("can_select_type"));*/
-	printf("id: %s ",builtin_species[i].max.id);
+	printf("id:%s ",builtin_species[i].max.id);
+	printf("%s:%s ",ts("species_class"),spec_ts(builtin_species[i].spec_class));
 	printf("%s:",ts("move"));
 	listmove(builtin_species+i);
-	printf("(%s)",unit_desc(p->id));
+	printf(" (%s)",unit_desc(p->id));
 	printf("\n");
 	}
 }
@@ -146,7 +147,7 @@ void p_types(void){
 		ew=effect_types(t);
 		for(int i=TYPE_GRASS;i&TYPES_ALL;i<<=1){
 			if(i&ew){
-				if(i&TYPES_DEVINE)
+				if(i&TYPES_DIVINE)
 					printf(" [%s]",type2str(i));
 				else
 					printf(" %s",type2str(i));
@@ -156,7 +157,7 @@ void p_types(void){
 		ew=weak_types(t);
 		for(int i=TYPE_GRASS;i&TYPES_ALL;i<<=1){
 			if(i&ew){
-				if(i&TYPES_DEVINE)
+				if(i&TYPES_DIVINE)
 					printf(" [%s]",type2str(i));
 				else
 					printf(" %s",type2str(i));

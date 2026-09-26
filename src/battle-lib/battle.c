@@ -15,22 +15,6 @@ int rand_selector(const struct player *p){
 	//return 7;
 	//if(*p->field->round==1)return 7;
 	if(!isalive(p->front->state)){
-		/*for(int i=ACT_UNIT0;i<=ACT_UNIT5;++i)
-			if(canaction2(p,i)){
-				c|=1<<i;
-				++n;
-			}
-		if(!n)
-			return ACT_GIVEUP;
-
-		n=randi()%n;
-		for(int i=ACT_UNIT0;i<=ACT_UNIT5;++i){
-			if((1<<i)&c){
-				if(!n)
-					return i;
-				--n;
-			}
-		}*/
 		for(int i=ACT_UNIT0;i<=ACT_UNIT5;++i)
 			if(canaction2(p,i))
 				return i;

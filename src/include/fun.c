@@ -9,7 +9,7 @@ const char *cont_id_fake(int level){
 }
 void cont_reset(struct unit *u,long level){
 	u->state=UNIT_FAILED;
-	unit_wipeeffect(u,0);
+	unit_wipeeffect(u,0,0);
 	mkbase_id(cont_id_fake(level),level,(struct unit_base *)u->base);
 	unit_fillattr(u);
 	report(u->owner->field,MSG_UPDATE,u);

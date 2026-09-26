@@ -1,4 +1,4 @@
-#include "locale.h"
+#include "ub-locale.h"
 #include "strmap.h"
 #include <string.h>
 #include <stdio.h>
@@ -9,7 +9,7 @@
 #include <errno.h>
 #include <assert.h>
 #include "expr.h"
-static const char *types_string[21]={"void_type","grass","fire","water","steel","light","fighting","wind","poison","rock","electric","ghost","ice","bug","machine","soil","dragon","normal","devine_grass","alkali_fire","devine_water"};
+static const char *types_string[21]={"void_type","grass","fire","water","steel","light","fighting","wind","poison","rock","electric","ghost","ice","bug","machine","soil","dragon","normal","divine_grass","alkali_fire","divine_water"};
 static struct strmap *loc=NULL;
 int loc_disable=0;
 static void __attribute__((destructor)) locale_end(void){
@@ -191,7 +191,18 @@ const char *event_ts(const char *id){
 		return id;
 	return p;
 }
-
+const char *spec_ts(const char *id){
+	char *buf;
+	const char *p;
+	size_t l;
+	l=strlen(id);
+	buf=alloca(l+11);
+	sprintf(buf,"spec.%s.name",id);
+	p=locale(buf);
+	if(!p)
+		return id;
+	return p;
+}
 const char *event_desc(const char *id){
 	char *buf;
 	const char *p;
